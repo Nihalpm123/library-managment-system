@@ -53,7 +53,7 @@ const Login = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@example.com"
+            placeholder="salafilibrary@gmail.com"
           />
           <Input
             label="Password"
@@ -77,8 +77,8 @@ const Login = () => {
           <p>This area is restricted to library administrators.</p>
           <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg text-left text-xs border border-indigo-100 dark:border-indigo-500/20">
             <p className="font-semibold text-indigo-700 dark:text-indigo-300 mb-1">Demo Credentials (Bypasses Firebase):</p>
-            <p>Email: <span className="font-mono bg-white dark:bg-slate-900 px-1 rounded">admin@admin.com</span></p>
-            <p>Password: <span className="font-mono bg-white dark:bg-slate-900 px-1 rounded">admin123</span></p>
+            <p>Email: <span className="font-mono bg-white dark:bg-slate-900 px-1 rounded">salafilibrary@gmail.com</span></p>
+            <p>Password: <span className="font-mono bg-white dark:bg-slate-900 px-1 rounded">karimbil</span></p>
           </div>
         </div>
       </Card>

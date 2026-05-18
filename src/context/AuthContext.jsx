@@ -12,8 +12,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     // MOCK LOGIN FOR TESTING WITHOUT FIREBASE
-    if (email === "admin@admin.com" && password === "admin123") {
-      setCurrentUser({ email: "admin@admin.com", uid: "mock-admin-id" });
+    if (email === "salafilibrary@gmail.com" && password === "karimbil") {
+      setCurrentUser({ email: "salafilibrary@gmail.com", uid: "mock-admin-id" });
       return Promise.resolve();
     }
     
@@ -21,8 +21,8 @@ export const AuthProvider = ({ children }) => {
       return await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       // If Firebase fails but they used the mock credentials, let them in anyway
-      if (email === "admin@admin.com" && password === "admin123") {
-        setCurrentUser({ email: "admin@admin.com", uid: "mock-admin-id" });
+      if (email === "salafilibrary@gmail.com" && password === "karimbil") {
+        setCurrentUser({ email: "salafilibrary@gmail.com", uid: "mock-admin-id" });
         return Promise.resolve();
       }
       throw error;

@@ -117,14 +117,29 @@ const AddEditBook = () => {
               required
               placeholder="e.g. SN-123456"
             />
-            <Input
-              label="Category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              placeholder="e.g. Science Fiction"
-            />
+            <div className="w-full">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
+              >
+                <option value="" disabled>Select Category</option>
+                <option value="Islamic">Islamic</option>
+                <option value="History">History</option>
+                <option value="Literature">Literature</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Science">Science</option>
+                <option value="Biography">Biography</option>
+                <option value="Children">Children</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
             <div className="md:col-span-2">
               <Input
                 label="Book Title"
