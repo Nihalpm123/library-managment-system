@@ -19,6 +19,7 @@ const AddEditBook = () => {
   const [formData, setFormData] = useState({
     title: '',
     author: '',
+    publisher: '',
     category: '',
     quantity: 1,
     imageURL: '',
@@ -142,6 +143,14 @@ const AddEditBook = () => {
               onChange={handleChange}
               required
               placeholder="Enter author name"
+            />
+            <Input
+              label="Publisher Name"
+              name="publisher"
+              value={formData.publisher}
+              onChange={handleChange}
+              required
+              placeholder="Enter publisher name"
             />
             <Input
               label="Quantity"
