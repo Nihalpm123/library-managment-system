@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase/config';
-import { Save, ArrowLeft } from 'lucide-react';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../../firebase/config';
+import { Save, ArrowLeft, Upload, Loader2 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
@@ -15,6 +16,7 @@ const AddEditBook = () => {
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEditing);
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -57,10 +59,44 @@ const AddEditBook = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: name === 'quantity' ? parseInt(value) || 0 : value 
-    }));
+    
+    setFormData(prev => {
+      const updatedData = { 
+        ...prev, 
+        [name]: name === 'quantity' ? parseInt(value) || 0 : value 
+      };
+      
+      if (name === 'category' && !isEditing) {
+        const catCode = value.substring(0, 3);
+        const currentSn = prev.serialNumber;
+        if (currentSn && currentSn.length >= 4) {
+          const prefix = currentSn.substring(0, currentSn.length - 4);
+          updatedData.serialNumber = prefix + '0' + catCode;
+        }
+      }
+      
+      return updatedData;
+    });
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const storageRef = ref(storage, `book-images/${Date.now()}-${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      
+      setFormData(prev => ({ ...prev, imageURL: downloadURL }));
+      toast.success('Image uploaded successfully');
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -200,14 +236,34 @@ const AddEditBook = () => {
               required
             />
             <div className="md:col-span-2">
-              <Input
-                label="Image URL"
-                name="imageURL"
-                type="url"
-                value={formData.imageURL}
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-              />
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Book Image</label>
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <div className="flex-1 w-full">
+                  <Input
+                    name="imageURL"
+                    type="url"
+                    value={formData.imageURL}
+                    onChange={handleChange}
+                    placeholder="Enter image URL or upload file"
+                  />
+                </div>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <span className="text-sm text-slate-500 font-medium">OR</span>
+                  <div className="relative">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                      disabled={uploadingImage}
+                    />
+                    <Button type="button" variant="secondary" icon={uploadingImage ? Loader2 : Upload} className={uploadingImage ? "opacity-75" : ""}>
+                      {uploadingImage ? "Uploading..." : "Upload File"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
               {formData.imageURL && (
                 <div className="mt-3 relative w-32 h-40 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
                   <img src={formData.imageURL} alt="Preview" className="w-full h-full object-cover" />
