@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, updateDoc, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase/config';
 import { Save, ArrowLeft, Upload, Loader2 } from 'lucide-react';
@@ -33,12 +33,26 @@ const AddEditBook = () => {
   useEffect(() => {
     if (isEditing) {
       fetchBook();
-    } else {
-      // Auto-generate serial number for new book
-      const autoSn = 'SN-' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
-      setFormData(prev => ({ ...prev, serialNumber: autoSn }));
     }
   }, [id]);
+
+  useEffect(() => {
+    if (!isEditing && formData.category) {
+      const generateSequentialSN = async () => {
+        try {
+          const catCode = formData.category.substring(0, 3);
+          const q = query(collection(db, 'books'), where('category', '==', formData.category));
+          const querySnapshot = await getDocs(q);
+          const count = querySnapshot.size + 1;
+          const paddedCount = count.toString().padStart(4, '0');
+          setFormData(prev => ({ ...prev, serialNumber: `${catCode}-${paddedCount}` }));
+        } catch (error) {
+          console.error("Error generating serial number:", error);
+        }
+      };
+      generateSequentialSN();
+    }
+  }, [formData.category, isEditing]);
 
   const fetchBook = async () => {
     try {
@@ -60,23 +74,10 @@ const AddEditBook = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    setFormData(prev => {
-      const updatedData = { 
-        ...prev, 
-        [name]: name === 'quantity' ? parseInt(value) || 0 : value 
-      };
-      
-      if (name === 'category' && !isEditing) {
-        const catCode = value.substring(0, 3);
-        const currentSn = prev.serialNumber;
-        if (currentSn && currentSn.length >= 4) {
-          const prefix = currentSn.substring(0, currentSn.length - 4);
-          updatedData.serialNumber = prefix + '0' + catCode;
-        }
-      }
-      
-      return updatedData;
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'quantity' ? parseInt(value) || 0 : value
+    }));
   };
 
   const handleImageUpload = async (e) => {
