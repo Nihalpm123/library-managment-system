@@ -132,7 +132,11 @@ const ManageBooks = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                      <span className="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs">{book.category}</span>
+                      <div className="flex flex-col gap-1 items-start">
+                        <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs">{book.category}</span>
+                        {book.subCategory && <span className="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 px-2 py-0.5 rounded text-xs">{book.subCategory}</span>}
+                        {book.language && <span className="bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded text-xs">{book.language}</span>}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       {book.available ? (

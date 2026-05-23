@@ -21,6 +21,8 @@ const AddEditBook = () => {
     author: '',
     publisher: '',
     category: '',
+    subCategory: '',
+    language: '',
     quantity: 1,
     imageURL: '',
     serialNumber: ''
@@ -138,6 +140,28 @@ const AddEditBook = () => {
                 <option value="700 - Arts & Recreation">700 - Arts & Recreation</option>
                 <option value="800 - Literature">800 - Literature</option>
                 <option value="900 - History & Geography">900 - History & Geography</option>
+              </select>
+            </div>
+            <Input
+              label="Sub Category"
+              name="subCategory"
+              value={formData.subCategory}
+              onChange={handleChange}
+              placeholder="e.g. Fiction, History, etc."
+            />
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Language</label>
+              <select
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="" disabled>-- Select language --</option>
+                <option value="English">English</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Malayalam">Malayalam</option>
               </select>
             </div>
             <div className="md:col-span-2">

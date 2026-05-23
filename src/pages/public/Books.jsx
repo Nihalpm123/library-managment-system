@@ -115,9 +115,21 @@ const Books = () => {
                 </div>
               </div>
               <div className="p-4 flex-1 flex flex-col">
-                <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400 mb-1">
-                  {book.category}
-                </span>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                    {book.category}
+                  </span>
+                  {book.subCategory && (
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-full px-2">
+                      {book.subCategory}
+                    </span>
+                  )}
+                  {book.language && (
+                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50 rounded-full px-2 bg-amber-50 dark:bg-amber-900/20">
+                      {book.language}
+                    </span>
+                  )}
+                </div>
                 <h3 className="font-semibold text-lg text-slate-900 dark:text-white mb-1 line-clamp-1">
                   {book.title}
                 </h3>
