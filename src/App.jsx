@@ -18,6 +18,8 @@ import ManageBooks from './pages/admin/ManageBooks';
 import AddEditBook from './pages/admin/AddEditBook';
 import BorrowedBooks from './pages/admin/BorrowedBooks';
 import Reports from './pages/admin/Reports';
+import ManageMembers from './pages/admin/ManageMembers';
+import AddEditMember from './pages/admin/AddEditMember';
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
@@ -54,6 +56,9 @@ function App() {
         <Route path="books/edit/:id" element={<AddEditBook />} />
         <Route path="borrowed" element={<BorrowedBooks />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="members" element={<ManageMembers />} />
+        <Route path="members/add" element={<AddEditMember />} />
+        <Route path="members/edit/:id" element={<AddEditMember />} />
       </Route>
 
       {/* Catch All */}

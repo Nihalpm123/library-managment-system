@@ -15,6 +15,7 @@ const BorrowedBooks = () => {
   // Issue Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [availableBooks, setAvailableBooks] = useState([]);
+  const [members, setMembers] = useState([]);
   const [issueData, setIssueData] = useState({
     bookId: '',
     borrowerName: ''
@@ -55,8 +56,23 @@ const BorrowedBooks = () => {
     }
   };
 
+  const fetchMembers = async () => {
+    try {
+      const q = query(collection(db, 'members'));
+      const querySnapshot = await getDocs(q);
+      const membersData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMembers(membersData);
+    } catch (error) {
+      toast.error('Failed to load members');
+    }
+  };
+
   const handleOpenIssueModal = () => {
     fetchAvailableBooks();
+    fetchMembers();
     setIsModalOpen(true);
   };
 
@@ -126,6 +142,7 @@ const BorrowedBooks = () => {
                 <th className="px-6 py-4 font-medium">Book Info</th>
                 <th className="px-6 py-4 font-medium">Borrower Name</th>
                 <th className="px-6 py-4 font-medium">Borrow Date</th>
+                <th className="px-6 py-4 font-medium">Due Date</th>
                 <th className="px-6 py-4 font-medium text-right">Actions</th>
               </tr>
             </thead>
@@ -154,6 +171,20 @@ const BorrowedBooks = () => {
                     </td>
                     <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                       {book.borrowDate ? new Date(book.borrowDate).toLocaleDateString() : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4">
+                      {(() => {
+                        if (!book.borrowDate) return <span className="text-slate-600 dark:text-slate-300">N/A</span>;
+                        const borrowDate = new Date(book.borrowDate);
+                        const dueDate = new Date(borrowDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+                        const isOverdue = new Date() > dueDate;
+                        return (
+                          <span className={isOverdue ? "text-red-600 dark:text-red-400 font-semibold" : "text-slate-600 dark:text-slate-300"}>
+                            {dueDate.toLocaleDateString()}
+                            {isOverdue && <span className="ml-2 text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full">Overdue</span>}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Button 
@@ -202,13 +233,22 @@ const BorrowedBooks = () => {
                 </select>
               </div>
               
-              <Input
-                label="Borrower Name"
-                required
-                value={issueData.borrowerName}
-                onChange={(e) => setIssueData({...issueData, borrowerName: e.target.value})}
-                placeholder="Enter borrower name"
-              />
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Borrower Name</label>
+                <select
+                  required
+                  value={issueData.borrowerName}
+                  onChange={(e) => setIssueData({...issueData, borrowerName: e.target.value})}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="" disabled>-- Choose a registered member --</option>
+                  {members.map(member => (
+                    <option key={member.id} value={member.name}>
+                      {member.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               
               <div className="pt-4 flex gap-3">
                 <Button type="button" variant="secondary" className="flex-1" onClick={() => setIsModalOpen(false)}>

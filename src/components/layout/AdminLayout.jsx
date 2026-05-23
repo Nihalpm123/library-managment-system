@@ -9,7 +9,8 @@ import {
   Moon, 
   Sun,
   Menu,
-  X
+  X,
+  BookUp
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -37,7 +38,8 @@ const AdminLayout = () => {
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
     { name: 'Manage Books', path: '/admin/books', icon: Library },
     { name: 'Add Book', path: '/admin/books/add', icon: BookPlus },
-    { name: 'Borrowed Books', path: '/admin/borrowed', icon: Users },
+    { name: 'Members', path: '/admin/members', icon: Users },
+    { name: 'Borrowed Books', path: '/admin/borrowed', icon: BookUp },
     { name: 'Reports', path: '/admin/reports', icon: FileText },
   ];
 
