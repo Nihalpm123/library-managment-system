@@ -11,17 +11,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const login = async (email, password) => {
-    // MOCK LOGIN FOR TESTING WITHOUT FIREBASE
-    if (email === "salafilibrary@gmail.com" && password === "karimbil") {
-      setCurrentUser({ email: "salafilibrary@gmail.com", uid: "mock-admin-id" });
-      return Promise.resolve();
-    }
-    
     try {
       return await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      // If Firebase fails but they used the mock credentials, let them in anyway
+      // If Firebase fails (e.g. not configured, offline, or mock testing), but they used the mock credentials, let them in anyway
       if (email === "salafilibrary@gmail.com" && password === "karimbil") {
+        console.warn("Using fallback mock admin credentials.");
         setCurrentUser({ email: "salafilibrary@gmail.com", uid: "mock-admin-id" });
         return Promise.resolve();
       }
