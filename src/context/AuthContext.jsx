@@ -4,6 +4,7 @@ import { auth } from "../firebase/config";
 
 const AuthContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -34,20 +35,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    let unsubscribe;
     try {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe = onAuthStateChanged(auth, (user) => {
         if (!currentUser || currentUser.uid !== "mock-admin-id") {
           setCurrentUser(user);
         }
         setLoading(false);
       });
-      return unsubscribe;
     } catch (error) {
       // Catch errors if Firebase is not configured properly
       console.error("Firebase auth error (likely missing config):", error);
-      setLoading(false);
+      Promise.resolve().then(() => {
+        setLoading(false);
+      });
     }
-  }, []);
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [currentUser]);
 
   const value = {
     currentUser,

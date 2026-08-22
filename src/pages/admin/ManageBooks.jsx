@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db, collection, getDocs, deleteDoc, doc, query, orderBy } from '../../firebase/db';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, Plus, Search, Loader2 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
@@ -13,10 +12,6 @@ const ManageBooks = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-
-  useEffect(() => {
-    fetchBooks();
-  }, []);
 
   const fetchBooks = async () => {
     try {
@@ -35,6 +30,12 @@ const ManageBooks = () => {
     }
   };
 
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchBooks();
+    });
+  }, []);
+
   const handleDelete = async (id, title) => {
     if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
       try {
@@ -42,6 +43,7 @@ const ManageBooks = () => {
         setBooks(books.filter(book => book.id !== id));
         toast.success('Book deleted successfully');
       } catch (error) {
+        console.error('Error deleting book:', error);
         toast.error('Failed to delete book');
       }
     }

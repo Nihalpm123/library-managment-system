@@ -22,7 +22,7 @@ const MainLayout = () => {
             <div className="flex items-center">
               <Link to="/" className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xl">
                 <BookOpen className="h-6 w-6" />
-                <span>LMS Portal</span>
+                <span>Salafi Library Karimbil</span>
               </Link>
             </div>
             
@@ -105,7 +105,7 @@ const MainLayout = () => {
         <div className="max-w-7xl mx-auto px-4 text-center text-slate-500 dark:text-slate-400">
           <div className="flex justify-center items-center gap-2 mb-4">
             <BookOpen className="h-5 w-5" />
-            <span className="font-semibold text-slate-700 dark:text-slate-300">LMS Portal</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Salafi Library Karimbil</span>
           </div>
           <p>© {new Date().getFullYear()} Library Management System. All rights reserved.</p>
         </div>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db, collection, getDocs, query, orderBy } from '../../firebase/db';
 import { Search, Filter, Loader2, BookX } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
@@ -11,10 +10,6 @@ const Books = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-
-  useEffect(() => {
-    fetchBooks();
-  }, []);
 
   const fetchBooks = async () => {
     try {
@@ -32,6 +27,12 @@ const Books = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchBooks();
+    });
+  }, []);
 
   const categories = ['All', ...new Set(books.map(book => book.category))].filter(Boolean);
 

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db, collection, getDocs, query, orderBy } from '../../firebase/db';
 import { BookMarked, Users, BookCheck, Clock } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 
@@ -12,10 +11,6 @@ const Dashboard = () => {
   });
   const [recentBooks, setRecentBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
   const fetchDashboardData = async () => {
     try {
@@ -47,6 +42,12 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchDashboardData();
+    });
+  }, []);
 
   const statCards = [
     { title: 'Total Books', value: stats.total, icon: BookMarked, color: 'text-blue-600', bg: 'bg-blue-100 dark:bg-blue-500/10' },

@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db, collection, getDocs } from '../../firebase/db';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { Download, Loader2, FileText, Users } from 'lucide-react';
+import { Download, FileText, Users } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import toast from 'react-hot-toast';
@@ -47,6 +46,7 @@ const Reports = () => {
       doc.save("library_inventory.pdf");
       toast.success("Inventory report downloaded");
     } catch (error) {
+      console.error('Error generating inventory report:', error);
       toast.error("Failed to generate report");
     } finally {
       setLoadingInv(false);
@@ -86,6 +86,7 @@ const Reports = () => {
       doc.save("borrowed_books_report.pdf");
       toast.success("Borrowed books report downloaded");
     } catch (error) {
+      console.error('Error generating borrowed books report:', error);
       toast.error("Failed to generate report");
     } finally {
       setLoadingBor(false);

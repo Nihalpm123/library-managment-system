@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db, collection, getDocs, deleteDoc, doc, query, orderBy } from '../../firebase/db';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, Plus, Search, Loader2 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
@@ -12,10 +11,6 @@ const ManageMembers = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    fetchMembers();
-  }, []);
 
   const fetchMembers = async () => {
     try {
@@ -34,6 +29,12 @@ const ManageMembers = () => {
     }
   };
 
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchMembers();
+    });
+  }, []);
+
   const handleDelete = async (id, name) => {
     if (window.confirm(`Are you sure you want to delete member "${name}"?`)) {
       try {
@@ -41,6 +42,7 @@ const ManageMembers = () => {
         setMembers(members.filter(member => member.id !== id));
         toast.success('Member deleted successfully');
       } catch (error) {
+        console.error('Error deleting member:', error);
         toast.error('Failed to delete member');
       }
     }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db, collection, addDoc, doc, getDoc, updateDoc } from '../../firebase/db';
 import { Save, ArrowLeft } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -23,12 +22,6 @@ const AddEditMember = () => {
     address: ''
   });
 
-  useEffect(() => {
-    if (isEditing) {
-      fetchMember();
-    }
-  }, [id]);
-
   const fetchMember = async () => {
     try {
       const docRef = doc(db, 'members', id);
@@ -40,11 +33,21 @@ const AddEditMember = () => {
         navigate('/admin/members');
       }
     } catch (error) {
+      console.error('Error fetching member:', error);
       toast.error('Error fetching member details');
     } finally {
       setFetching(false);
     }
   };
+
+  useEffect(() => {
+    if (isEditing) {
+      Promise.resolve().then(() => {
+        fetchMember();
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEditing]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { collection, addDoc, doc, getDoc, updateDoc, query, where, getDocs } from 'firebase/firestore';
+import { db, collection, addDoc, doc, getDoc, updateDoc, query, where, getDocs } from '../../firebase/db';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../firebase/config';
+import { storage } from '../../firebase/config';
 import { Save, ArrowLeft, Upload, Loader2 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -30,11 +30,32 @@ const AddEditBook = () => {
     serialNumber: ''
   });
 
+  const fetchBook = async () => {
+    try {
+      const docRef = doc(db, 'books', id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setFormData(docSnap.data());
+      } else {
+        toast.error('Book not found');
+        navigate('/admin/books');
+      }
+    } catch (error) {
+      console.error('Error fetching book:', error);
+      toast.error('Error fetching book details');
+    } finally {
+      setFetching(false);
+    }
+  };
+
   useEffect(() => {
     if (isEditing) {
-      fetchBook();
+      Promise.resolve().then(() => {
+        fetchBook();
+      });
     }
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEditing]);
 
   useEffect(() => {
     if (!isEditing && formData.category) {
@@ -53,23 +74,6 @@ const AddEditBook = () => {
       generateSequentialSN();
     }
   }, [formData.category, isEditing]);
-
-  const fetchBook = async () => {
-    try {
-      const docRef = doc(db, 'books', id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setFormData(docSnap.data());
-      } else {
-        toast.error('Book not found');
-        navigate('/admin/books');
-      }
-    } catch (error) {
-      toast.error('Error fetching book details');
-    } finally {
-      setFetching(false);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -177,6 +181,9 @@ const AddEditBook = () => {
                 <option value="700 - Arts & Recreation">700 - Arts & Recreation</option>
                 <option value="800 - Literature">800 - Literature</option>
                 <option value="900 - History & Geography">900 - History & Geography</option>
+                <option value="Souvenir">Souvenir</option>
+                <option value="Motivation">Motivation</option>
+                <option value="Other books">Other books</option>
               </select>
             </div>
             <Input

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { db, collection, getDocs, doc, updateDoc, query, where } from '../../firebase/db';
 import { BookUp, RotateCcw, Search, Loader2, X } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -10,7 +9,10 @@ import toast from 'react-hot-toast';
 const BorrowedBooks = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Separate search terms for books and borrowers
+  const [searchBook, setSearchBook] = useState('');
+  const [searchBorrower, setSearchBorrower] = useState('');
   
   // Issue Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,9 +24,9 @@ const BorrowedBooks = () => {
   });
   const [issuing, setIssuing] = useState(false);
 
-  useEffect(() => {
-    fetchBorrowedBooks();
-  }, []);
+  // Modal filters
+  const [modalBookSearch, setModalBookSearch] = useState('');
+  const [modalMemberSearch, setModalMemberSearch] = useState('');
 
   const fetchBorrowedBooks = async () => {
     try {
@@ -36,6 +38,7 @@ const BorrowedBooks = () => {
       }));
       setBooks(booksData);
     } catch (error) {
+      console.error('Error fetching borrowed books:', error);
       toast.error('Failed to load borrowed books');
     } finally {
       setLoading(false);
@@ -52,6 +55,7 @@ const BorrowedBooks = () => {
       }));
       setAvailableBooks(booksData);
     } catch (error) {
+      console.error('Error fetching available books:', error);
       toast.error('Failed to load available books');
     }
   };
@@ -66,13 +70,22 @@ const BorrowedBooks = () => {
       }));
       setMembers(membersData);
     } catch (error) {
+      console.error('Error fetching members:', error);
       toast.error('Failed to load members');
     }
   };
 
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchBorrowedBooks();
+    });
+  }, []);
+
   const handleOpenIssueModal = () => {
     fetchAvailableBooks();
     fetchMembers();
+    setModalBookSearch('');
+    setModalMemberSearch('');
     setIsModalOpen(true);
   };
 
@@ -92,6 +105,7 @@ const BorrowedBooks = () => {
       setIssueData({ bookId: '', borrowerName: '' });
       fetchBorrowedBooks(); // Refresh list
     } catch (error) {
+      console.error('Error issuing book:', error);
       toast.error('Failed to issue book');
     } finally {
       setIssuing(false);
@@ -109,27 +123,53 @@ const BorrowedBooks = () => {
         toast.success('Book returned successfully');
         setBooks(books.filter(book => book.id !== id));
       } catch (error) {
+        console.error('Error returning book:', error);
         toast.error('Failed to return book');
       }
     }
   };
 
-  const filteredBooks = books.filter(book => 
-    book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (book.borrowedBy && book.borrowedBy.toLowerCase().includes(searchTerm.toLowerCase()))
+  // Filter based on dual search fields
+  const filteredBooks = books.filter(book => {
+    const matchesBook = book.title.toLowerCase().includes(searchBook.toLowerCase()) || 
+                       book.serialNumber.toLowerCase().includes(searchBook.toLowerCase());
+    const matchesBorrower = !searchBorrower || (book.borrowedBy && book.borrowedBy.toLowerCase().includes(searchBorrower.toLowerCase()));
+    return matchesBook && matchesBorrower;
+  });
+
+  // Modal search filters
+  const filteredAvailableBooks = availableBooks.filter(book => 
+    book.title.toLowerCase().includes(modalBookSearch.toLowerCase()) ||
+    book.serialNumber.toLowerCase().includes(modalBookSearch.toLowerCase())
+  );
+  
+  const filteredMembers = members.filter(member => 
+    member.name.toLowerCase().includes(modalMemberSearch.toLowerCase()) ||
+    (member.email && member.email.toLowerCase().includes(modalMemberSearch.toLowerCase()))
   );
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search by book or borrower..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto flex-1 max-w-2xl">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search by book title or serial..."
+              value={searchBook}
+              onChange={(e) => setSearchBook(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search by borrower name..."
+              value={searchBorrower}
+              onChange={(e) => setSearchBorrower(e.target.value)}
+              className="pl-9"
+            />
+          </div>
         </div>
         <Button icon={BookUp} onClick={handleOpenIssueModal}>Issue Book</Button>
       </div>
@@ -149,14 +189,14 @@ const BorrowedBooks = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="4" className="px-6 py-8 text-center">
+                  <td colSpan="5" className="px-6 py-8 text-center">
                     <Loader2 className="h-6 w-6 animate-spin mx-auto text-indigo-600" />
                   </td>
                 </tr>
               ) : filteredBooks.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="px-6 py-8 text-center text-slate-500">
-                    No books currently borrowed.
+                  <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
+                    No matching borrowed books found.
                   </td>
                 </tr>
               ) : (
@@ -218,14 +258,23 @@ const BorrowedBooks = () => {
             <form onSubmit={handleIssueBook} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Select Book</label>
+                <div className="relative mb-2">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="Type to filter books..."
+                    value={modalBookSearch}
+                    onChange={(e) => setModalBookSearch(e.target.value)}
+                    className="pl-9 py-1 text-sm font-normal"
+                  />
+                </div>
                 <select
                   required
                   value={issueData.bookId}
                   onChange={(e) => setIssueData({...issueData, bookId: e.target.value})}
                   className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="" disabled>-- Choose an available book --</option>
-                  {availableBooks.map(book => (
+                  <option value="" disabled>-- Choose an available book ({filteredAvailableBooks.length} found) --</option>
+                  {filteredAvailableBooks.map(book => (
                     <option key={book.id} value={book.id}>
                       {book.title} ({book.serialNumber})
                     </option>
@@ -235,14 +284,23 @@ const BorrowedBooks = () => {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Borrower Name</label>
+                <div className="relative mb-2">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="Type to filter members..."
+                    value={modalMemberSearch}
+                    onChange={(e) => setModalMemberSearch(e.target.value)}
+                    className="pl-9 py-1 text-sm font-normal"
+                  />
+                </div>
                 <select
                   required
                   value={issueData.borrowerName}
                   onChange={(e) => setIssueData({...issueData, borrowerName: e.target.value})}
                   className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="" disabled>-- Choose a registered member --</option>
-                  {members.map(member => (
+                  <option value="" disabled>-- Choose a registered member ({filteredMembers.length} found) --</option>
+                  {filteredMembers.map(member => (
                     <option key={member.id} value={member.name}>
                       {member.name}
                     </option>
