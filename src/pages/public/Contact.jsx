@@ -22,7 +22,7 @@ const Contact = () => {
       <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Get in Touch</h2>
-          
+
           <div className="space-y-6">
             <div className="flex items-start gap-4">
               <div className="p-3 bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-lg">
@@ -30,7 +30,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-slate-900 dark:text-white">Address</h3>
-                <p className="text-slate-600 dark:text-slate-400 mt-1">123 Library Street, Knowledge City<br />NY 10001, USA</p>
+                <p className="text-slate-600 dark:text-slate-400 mt-1">SALAFI MASJID COMPLEX KARIMBIL<br />KAKKAD(PO)</p>
               </div>
             </div>
 
@@ -40,7 +40,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-slate-900 dark:text-white">Phone</h3>
-                <p className="text-slate-600 dark:text-slate-400 mt-1">+1 (555) 123-4567</p>
+                <p className="text-slate-600 dark:text-slate-400 mt-1">+91 7012752550</p>
               </div>
             </div>
 
@@ -50,7 +50,7 @@ const Contact = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-slate-900 dark:text-white">Email</h3>
-                <p className="text-slate-600 dark:text-slate-400 mt-1">contact@lmsportal.com</p>
+                <p className="text-slate-600 dark:text-slate-400 mt-1">salafilibrarykarimbil@gmail.com</p>
               </div>
             </div>
           </div>
@@ -60,7 +60,7 @@ const Contact = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input label="Name" required placeholder="Your full name" />
             <Input label="Email" type="email" required placeholder="you@example.com" />
-            
+
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                 Message

@@ -12,6 +12,7 @@ const MainLayout = () => {
     { name: 'Books', path: '/books' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
+    { name: 'QR Donation', path: '/qr-donation' },
   ];
 
   return (

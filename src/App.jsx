@@ -18,6 +18,7 @@ const Home = lazy(() => import('./pages/public/Home'));
 const Books = lazy(() => import('./pages/public/Books'));
 const About = lazy(() => import('./pages/public/About'));
 const Contact = lazy(() => import('./pages/public/Contact'));
+const QRDonation = lazy(() => import('./pages/public/QRDonation'));
 
 // Admin Pages
 const Login = lazy(() => import('./pages/admin/Login'));
@@ -45,6 +46,7 @@ function App() {
           <Route path="books" element={<Books />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="qr-donation" element={<QRDonation />} />
         </Route>
 
         {/* Admin Login */}
